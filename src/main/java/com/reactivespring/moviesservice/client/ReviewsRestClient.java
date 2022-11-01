@@ -3,6 +3,7 @@ package com.reactivespring.moviesservice.client;
 import com.reactivespring.moviesservice.domain.Review;
 import com.reactivespring.moviesservice.exceptions.ReviewsClientException;
 import com.reactivespring.moviesservice.exceptions.ReviewsServerException;
+import com.reactivespring.moviesservice.utils.RetryUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -46,6 +47,7 @@ public class ReviewsRestClient {
                     return clientResponse.bodyToMono(String.class)
                             .flatMap(response -> Mono.error(new ReviewsServerException(response)));
                 }))
-                .bodyToFlux(Review.class);
+                .bodyToFlux(Review.class)
+                .retryWhen(RetryUtils.retrySpec());
     }
 }

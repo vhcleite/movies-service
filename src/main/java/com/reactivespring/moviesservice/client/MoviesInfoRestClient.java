@@ -3,6 +3,7 @@ package com.reactivespring.moviesservice.client;
 import com.reactivespring.moviesservice.domain.MovieInfo;
 import com.reactivespring.moviesservice.exceptions.MoviesInfoClientException;
 import com.reactivespring.moviesservice.exceptions.MoviesInfoServerException;
+import com.reactivespring.moviesservice.utils.RetryUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -43,6 +44,7 @@ public class MoviesInfoRestClient {
                             .flatMap(response -> Mono.error(new MoviesInfoServerException(response)));
                 }))
                 .bodyToMono(MovieInfo.class)
+                .retryWhen(RetryUtils.retrySpec())
                 .log();
 
     }
